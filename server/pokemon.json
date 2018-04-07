@@ -1,0 +1,67 @@
+{
+	"1": {
+		"id": "1",
+		"name": "Bulbasaur",
+		"image_url": "http://serebii.net/xy/pokemon/001.png"
+	},
+
+	"2": {
+		"id": "2",
+		"name": "Ivysaur",
+		"image_url": "http://serebii.net/xy/pokemon/002.png"
+	},
+
+	"3": {
+		"id": "3",
+		"name": "Venusaur",
+		"image_url": "http://serebii.net/xy/pokemon/003.png"
+	},
+
+	"4": {
+		"id": "4",
+		"name": "Charmander",
+		"image_url": "http://serebii.net/xy/pokemon/004.png"
+	},
+
+	"5": {
+		"id": "5",
+		"name": "Charmeleon",
+		"image_url": "http://serebii.net/xy/pokemon/005.png"
+	},
+
+	"6": {
+		"id": "6",
+		"name": "Charizard",
+		"image_url": "http://serebii.net/xy/pokemon/006.png"
+	},
+
+	"7": {
+		"id": "7",
+		"name": "Squirtle",
+		"image_url": "http://serebii.net/xy/pokemon/007.png"
+	},
+
+	"8": {
+		"id": "8",
+		"name": "Wartortle",
+		"image_url": "http://serebii.net/xy/pokemon/008.png"
+	},
+
+	"9": {
+		"id": "9",
+		"name": "Blastoise",
+		"image_url": "http://serebii.net/xy/pokemon/009.png"
+	},
+
+	"10": {
+		"id": "10",
+		"name": "Caterpie",
+		"image_url": "http://serebii.net/xy/pokemon/010.png"
+	},
+
+	"11": {
+		"id": "11",
+		"name": "Metapod",
+		"image_url": "http://serebii.net/xy/pokemon/011.png"
+	}
+}
