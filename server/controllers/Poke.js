@@ -24,6 +24,19 @@ const makerPage = (req, res) => {
   });
 };
 
+const catchPage = (req, res) => res.render('catch', { csrfToken: req.csrfToken() });
+
+const getRecentCatch = (req, res) => Poke.PokeModel.findByOwner(
+  req.session.account._id,
+  (err, docs) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }
+    return res.json({ catch: docs[docs.length - 1] });
+  },
+);
+
 const makePoke = (req, res) => {
   const pokemon = getRandomPokemon();
 
@@ -68,5 +81,7 @@ const getPokes = (request, response) => {
 };
 
 module.exports.makerPage = makerPage;
+module.exports.catchPage = catchPage;
 module.exports.getPokes = getPokes;
+module.exports.getRecentCatch = getRecentCatch;
 module.exports.make = makePoke;

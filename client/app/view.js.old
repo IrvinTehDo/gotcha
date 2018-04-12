@@ -15,7 +15,7 @@ const PokeForm = (props) => {
         <form id="pokeForm"
             onSubmit={handlePoke}
             name="pokeForm"
-            action="/maker"
+            action="/catch"
             method="POST"
             className="pokeForm"
             >

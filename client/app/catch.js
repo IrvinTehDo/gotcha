@@ -4,7 +4,12 @@ const handlePoke = (e) =>{
     $("#pokeMessage").animate({ width: 'hide'}, 350);
     
     sendAjax('POST', $("#pokeForm").attr("action"), $("#pokeForm").serialize(), function() {
-       loadPokesFromServer(); 
+        sendAjax('GET', '/getRecentCatch', null, (data) => {
+            console.dir(data);
+            ReactDOM.render(
+                <CatchFrame catch={data.catch} />, document.querySelector("#capturedPokemon")
+            );
+        })
     });
     
     return false;
@@ -26,59 +31,31 @@ const PokeForm = (props) => {
     );
 };
 
-const PokeList = (props) => {
-    console.dir(props);
-    if(props.pokes.length === 0) {
+const CatchFrame = (props) => {
+    if (props.catch) {
+        return (
+            <div key={props.catch._id} className="poke">
+                <img src={props.catch.img} alt="Pokeball" className="pokeBall" />
+                <h3 className="pokeName"> Name: {props.catch.name} </h3>
+                <h3 className="pokeAge"> Level: {props.catch.level} </h3>
+            </div>
+        ); 
+    } else {
         return (
             <div className="pokeList">
                 <h3 className="emptyPoke">No Pokemons yet</h3>
             </div>
         );
     }
-    
-    const pokeNodes = props.pokes.map( (poke) => {
-        return (
-            <div key={poke._id} className="poke">
-                <img src={poke.img} alt="Pokeball" className="pokeBall" />
-                <h3 className="pokeName"> Name: {poke.name} </h3>
-                <h3 className="pokeAge"> Level: {poke.level} </h3>
-            </div>
-        ); 
-    });
-    
-    return (
-    <div className="pokeList">
-            {pokeNodes}
-        </div>
-    );
 };
 
-const loadPokesFromServer = () => {
-    sendAjax('GET', '/getPokes', null, (data) => {
-        ReactDOM.render(
-            <PokeList pokes={data.pokes} />, document.querySelector("#pokes")
-        );
-    })
-}
-
-const setup = function(csrf) {
+const renderPokeForm = (csrf) => {
     ReactDOM.render(
         <PokeForm csrf={csrf} />, document.querySelector("#makePoke")
     );
     
     ReactDOM.render(
-        <PokeForm pokes={[]} />, document.querySelector("#pokes")
+        <CatchFrame/>, document.querySelector("#capturedPokemon")
     );
-    
-    loadPokesFromServer();
 };
 
-const getToken = () => {
-    sendAjax('GET', '/getToken', null, (result) => {
-        setup(result.csrfToken);
-    });
-};
-
-$(document).ready(function() {
-    getToken();
-});
