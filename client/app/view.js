@@ -1,5 +1,5 @@
+// Constructs and display our list of pokemons for the account
 const PokeList = (props) => {
-    console.dir(props);
     if(props.pokes.length === 0) {
         return (
             <div className="pokeList">
@@ -25,14 +25,16 @@ const PokeList = (props) => {
     );
 };
 
+// Requests pokemons from the server
 const loadPokesFromServer = () => {
     sendAjax('GET', '/getPokes', null, (data) => {
         ReactDOM.render(
             <PokeList pokes={data.pokes} />, document.querySelector("#pokes")
         );
-    })
+    });
 }
 
+// Renders our list and attempts to fill it up
 const renderPokeList = (csrf) => {
     ReactDOM.render(
         <PokeList pokes={[]} />, document.querySelector("#pokes")
@@ -41,21 +43,28 @@ const renderPokeList = (csrf) => {
     loadPokesFromServer();
 }
 
-const setup = function(csrf) {
+// Page setup. Depending on what tag(s) we have, display and render that page.
+const setup = function(csrf, rolls) {
     if(document.querySelector("#pokes")) {
         renderPokeList(csrf);
     }
     if(document.querySelector("#makePoke")){
-        renderPokeForm(csrf);
+        renderPokeForm(csrf, rolls);
     }
+    if(document.querySelector("#store")){
+        renderStore(csrf);
+    }
+    
 };
 
+// Grab our csrf token
 const getToken = () => {
     sendAjax('GET', '/getToken', null, (result) => {
         setup(result.csrfToken);
     });
 };
 
+// When page is ready, grab token
 $(document).ready(function() {
     getToken();
 });

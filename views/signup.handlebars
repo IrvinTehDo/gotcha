@@ -4,12 +4,13 @@
   <title>Gotcha</title>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <link rel="shortcut icon" href="/assets/img/favicon.png"/>
+          <link rel="stylesheet" type="text/css" href="/assets/bootstrap.min.css"/>
   <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
 </head>
 <body>
   <nav><a href="/login"><img id="logo" src="/assets/img/pokedex.png" alt="pokedex"/></a>
-    <div class="navlink"><a href="/login">Login</a></div>
-    <div class="navlink"><a href="/signup">Sign up</a></div>
+    <div class="navlink"><a id="loginButton" href="/login">Login</a></div>
+    <div class="navlink"><a id="signupButton" href="/signup">Sign up</a></div>
   </nav>
   <section id="signup">
     <form id="signupForm" name="signupForm" action="/signup" method="POST" class="mainForm">
@@ -19,7 +20,7 @@
       <input id="pass" type="password" name="pass" placeholder="password"/>
       <label for="pass2">Password: </label>
       <input id="pass2" type="password" name="pass2" placeholder="retype password"/>
-      <input class="formSubmit" type="submit" value="Sign Up" />
+        <button type="submit" class="btn btn-primary btn-sm">Sign Up</button>
     </form>
   </section>
   <div id="pokeMessage"><img id="speech" src="/assets/img/speech.png" alt="speech box"/>

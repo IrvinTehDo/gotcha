@@ -4,7 +4,7 @@ const handleLogin = (e) => {
   $('#pokeMessage').animate({ width: 'hide' }, 350);
 
   if ($('#user').val() == '' || $('#pass').val() == '') {
-    handleError('RAWR! Username or password is empty');
+    handleError('Username or password is empty');
     return false;
   }
 
@@ -21,12 +21,12 @@ const handleSignup = (e) => {
   $('#pokeMessage').animate({ width: 'hide' }, 350);
 
   if ($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
-    handleError('RAWR! All fields are required');
+    handleError('All fields are required');
     return false;
   }
 
   if ($('#pass').val() !== $('#pass2').val()) {
-    handleError('RAWR! Passwords do no match');
+    handleError('Passwords do no match');
     return false;
   }
 
@@ -49,7 +49,7 @@ const LoginWindow = (props) => {
       <label htmlFor="pass">Password: </label>
       <input id="pass" type="password" name="pass" placeholder="password"/>
         <input type="hidden" name="_csrf" value={props.csrf}/>
-        <input className="formSubmit" type="submit" value="Sign in" />
+            <button className="btn btn-primary btn-lg" type="submit">Sign in</button>
         </form>
     );
 };
@@ -70,7 +70,7 @@ const SignupWindow = (props) => {
       <label htmlFor="pass2">Password: </label>
             <input id="pass2" type="password" name="pass2" placeholder="retype password"/>
             <input type="hidden" name="_csrf" value={props.csrf}/>
-            <input className="formSubmit" type="submit" value="Sign Up"/>
+            <button className="btn btn-primary btn-lg" type="submit">Sign Up</button>
         </form>
     );
 };

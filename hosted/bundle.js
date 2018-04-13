@@ -10,6 +10,7 @@ var handlePoke = function handlePoke(e) {
             console.dir(data);
             ReactDOM.render(React.createElement(CatchFrame, { 'catch': data.catch }), document.querySelector("#capturedPokemon"));
         });
+        getCatchPageInfo();
     });
 
     return false;
@@ -25,8 +26,29 @@ var PokeForm = function PokeForm(props) {
             method: 'POST',
             className: 'pokeForm'
         },
-        React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'catchPokeSubmit', type: 'submit', value: 'Catch Pokemon' })
+        React.createElement(
+            'fieldset',
+            null,
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+            React.createElement(
+                'button',
+                { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                'Catch Pokemon'
+            )
+        )
+    );
+};
+
+var RollCount = function RollCount(props) {
+    return React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'h2',
+            null,
+            'Pokeballs: ',
+            props.rolls
+        )
     );
 };
 
@@ -64,15 +86,60 @@ var CatchFrame = function CatchFrame(props) {
     }
 };
 
+var getCatchPageInfo = function getCatchPageInfo() {
+    sendAjax('GET', '/getCatchPageInfo', null, function (data) {
+        ReactDOM.render(React.createElement(RollCount, { rolls: data.rolls }), document.querySelector("#rollCount"));
+    });
+};
+
 var renderPokeForm = function renderPokeForm(csrf) {
     ReactDOM.render(React.createElement(PokeForm, { csrf: csrf }), document.querySelector("#makePoke"));
 
     ReactDOM.render(React.createElement(CatchFrame, null), document.querySelector("#capturedPokemon"));
+
+    getCatchPageInfo();
+};
+'use strict';
+
+var handleBuy = function handleBuy(e) {
+    e.preventDefault();
+
+    $("#pokeMessage").animate({ width: 'hide' }, 350);
+
+    sendAjax('POST', $("#buyForm").attr("action"), $("#buyForm").serialize(), function () {});
+
+    return false;
+};
+
+var StorePage = function StorePage(props) {
+    return React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'form',
+            { id: 'buyForm',
+                onSubmit: handleBuy,
+                name: 'pokeForm',
+                action: '/buyBall',
+                method: 'POST',
+                className: 'pokeForm'
+            },
+            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+            React.createElement(
+                'button',
+                { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                'Buy Pokeballs'
+            )
+        )
+    );
+};
+
+var renderStore = function renderStore(csrf) {
+    ReactDOM.render(React.createElement(StorePage, { csrf: csrf }), document.querySelector("#store"));
 };
 "use strict";
 
 var PokeList = function PokeList(props) {
-    console.dir(props);
     if (props.pokes.length === 0) {
         return React.createElement(
             "div",
@@ -126,12 +193,15 @@ var renderPokeList = function renderPokeList(csrf) {
     loadPokesFromServer();
 };
 
-var setup = function setup(csrf) {
+var setup = function setup(csrf, rolls) {
     if (document.querySelector("#pokes")) {
         renderPokeList(csrf);
     }
     if (document.querySelector("#makePoke")) {
-        renderPokeForm(csrf);
+        renderPokeForm(csrf, rolls);
+    }
+    if (document.querySelector("#store")) {
+        renderStore(csrf);
     }
 };
 

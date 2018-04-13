@@ -60,7 +60,11 @@ var LoginWindow = function LoginWindow(props) {
         ),
         React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'password' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Sign in' })
+        React.createElement(
+            'button',
+            { className: 'btn btn-primary btn-lg', type: 'submit' },
+            'Sign in'
+        )
     );
 };
 
@@ -93,7 +97,11 @@ var SignupWindow = function SignupWindow(props) {
         ),
         React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'retype password' }),
         React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
-        React.createElement('input', { className: 'formSubmit', type: 'submit', value: 'Sign Up' })
+        React.createElement(
+            'button',
+            { className: 'btn btn-primary btn-lg', type: 'submit' },
+            'Sign Up'
+        )
     );
 };
 

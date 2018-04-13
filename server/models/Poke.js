@@ -61,6 +61,14 @@ PokeSchema.statics.findByOwner = (ownerId, callback) => {
   return PokeModel.find(search).select('name level id img').exec(callback);
 };
 
+PokeSchema.statics.deleteById = (uniqueId) => {
+  const search = {
+    _id: uniqueId,
+  };
+
+  return PokeModel.remove(search, 1);
+};
+
 PokeModel = mongoose.model('Poke', PokeSchema);
 
 module.exports.PokeModel = PokeModel;

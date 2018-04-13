@@ -28,6 +28,14 @@ const AccountSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  rolls: {
+    type: Number,
+    default: 5,
+  },
+  rareCandy: {
+    type: Number,
+    default: 0,
+  },
 });
 
 AccountSchema.statics.toAPI = doc => ({
@@ -80,6 +88,43 @@ AccountSchema.statics.authenticate = (username, password, callback) =>
       return callback();
     });
   });
+
+// Does a query based on the _id of a user and grabs how many candies a user has.
+AccountSchema.statics.getCandy = user => AccountModel.findOne({ _id: user }, { rareCandy: 1 });
+
+// Updates amount of candy a user has based on amount
+AccountSchema.statics.updateCandy = (user, amount) => {
+  const update = {
+    $inc: { rareCandy: amount },
+  };
+
+  try {
+    AccountModel.findByIdAndUpdate(user, update, (err, doc) => {
+      console.log(doc);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// Same as getCandy except with rolls/pokeballs
+AccountSchema.statics.getRolls = user => AccountModel.findOne({ _id: user }, { rolls: 1 });
+
+// Same as updateCandy except with rolls/pokeballs
+AccountSchema.statics.updateRolls = (user, amount) => {
+  const update = {
+    $inc: { rolls: amount },
+  };
+
+  try {
+    //    AccountModel.updateOne({ _id: user }, { $inc: { rolls: amount } });
+    AccountModel.findByIdAndUpdate(user, update, (err, doc) => {
+      console.log(doc);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 AccountModel = mongoose.model('Account', AccountSchema);
 
