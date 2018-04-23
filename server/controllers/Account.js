@@ -19,6 +19,10 @@ const loginPage = (req, res) => {
   res.render('login', { csrfToken: req.csrfToken() });
 };
 
+const changePassPage = (req, res) => {
+  res.render('changePassword', { csrfToken: req.csrfToken() });
+};
+
 const logout = (req, res) => {
   req.session.destroy();
   res.redirect('/');
@@ -91,8 +95,49 @@ const signup = (request, response) => {
   });
 };
 
+const changePassword = (request, response) => {
+  const req = request;
+  const res = response;
+
+  req.body.oldPass = `${req.body.oldPass}`;
+  req.body.pass = `${req.body.pass}`;
+  req.body.pass2 = `${req.body.pass2}`;
+  console.dir(req.session.account.username);
+
+  if (req.body.pass !== req.body.pass2) {
+    return res.status(400).json({ error: 'Passwords do not match!' });
+  }
+
+  return Account.AccountModel.authenticate(
+    req.session.account.username,
+    req.body.oldPass,
+    (err, account) => {
+      if (err || !account) {
+        console.log('wrong pass');
+        console.log(`${req.session.account.username} | ${req.body.oldPass}`);
+        return res.status(401).json({ error: 'Wrong passsword' });
+      }
+
+      return Account.AccountModel.generateHash(req.body.pass, (salt, hash) => {
+        const acc = account;
+        acc.password = hash;
+        acc.salt = salt;
+
+        const savePromise = account.save();
+
+        savePromise.then(() => {
+          req.session.account = Account.AccountModel.toAPI(account);
+        });
+        savePromise.catch(() => res.status(500).json({ error: 'Unable to change password' }));
+      });
+    },
+  );
+};
+
 module.exports.loginPage = loginPage;
 module.exports.login = login;
 module.exports.logout = logout;
 module.exports.signup = signup;
+module.exports.changePassPage = changePassPage;
+module.exports.changePassword = changePassword;
 module.exports.getToken = getToken;

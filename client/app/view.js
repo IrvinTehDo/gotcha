@@ -54,7 +54,9 @@ const setup = function(csrf, rolls) {
     if(document.querySelector("#store")){
         renderStore(csrf);
     }
-    
+    if(document.querySelector("#changePassBox")){
+        renderChangePassWindow(csrf);
+    }
 };
 
 // Grab our csrf token

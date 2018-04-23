@@ -6,7 +6,7 @@ var handleLogin = function handleLogin(e) {
     $('#pokeMessage').animate({ width: 'hide' }, 350);
 
     if ($('#user').val() == '' || $('#pass').val() == '') {
-        handleError('RAWR! Username or password is empty');
+        handleError('Username or password is empty');
         return false;
     }
 
@@ -23,12 +23,12 @@ var handleSignup = function handleSignup(e) {
     $('#pokeMessage').animate({ width: 'hide' }, 350);
 
     if ($('#user').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
-        handleError('RAWR! All fields are required');
+        handleError('All fields are required');
         return false;
     }
 
     if ($('#pass').val() !== $('#pass2').val()) {
-        handleError('RAWR! Passwords do no match');
+        handleError('Passwords do no match');
         return false;
     }
 

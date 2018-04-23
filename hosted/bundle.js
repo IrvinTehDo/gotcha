@@ -1,5 +1,7 @@
 'use strict';
 
+// Sends a request to the server that we want to catch 
+// a new pokemon and then get the most recent one on the list back.
 var handlePoke = function handlePoke(e) {
     e.preventDefault();
 
@@ -10,12 +12,14 @@ var handlePoke = function handlePoke(e) {
             console.dir(data);
             ReactDOM.render(React.createElement(CatchFrame, { 'catch': data.catch }), document.querySelector("#capturedPokemon"));
         });
+        // Get Catch Page Info, in this case it's just how many pokeballs we have left.
         getCatchPageInfo();
     });
 
     return false;
 };
 
+// Button to request a capture
 var PokeForm = function PokeForm(props) {
     return React.createElement(
         'form',
@@ -39,6 +43,7 @@ var PokeForm = function PokeForm(props) {
     );
 };
 
+// Holds and creates roll count
 var RollCount = function RollCount(props) {
     return React.createElement(
         'div',
@@ -52,6 +57,7 @@ var RollCount = function RollCount(props) {
     );
 };
 
+//Displays our most recently captured pokemon
 var CatchFrame = function CatchFrame(props) {
     if (props.catch) {
         return React.createElement(
@@ -80,18 +86,20 @@ var CatchFrame = function CatchFrame(props) {
             React.createElement(
                 'h3',
                 { className: 'emptyPoke' },
-                'No Pokemons yet'
+                'No Pokemon captured recently'
             )
         );
     }
 };
 
+//Requests amount of pokeballs we have left
 var getCatchPageInfo = function getCatchPageInfo() {
     sendAjax('GET', '/getCatchPageInfo', null, function (data) {
         ReactDOM.render(React.createElement(RollCount, { rolls: data.rolls }), document.querySelector("#rollCount"));
     });
 };
 
+//Render our page
 var renderPokeForm = function renderPokeForm(csrf) {
     ReactDOM.render(React.createElement(PokeForm, { csrf: csrf }), document.querySelector("#makePoke"));
 
@@ -101,6 +109,63 @@ var renderPokeForm = function renderPokeForm(csrf) {
 };
 'use strict';
 
+var handleChangePass = function handleChangePass(e) {
+  e.preventDefault();
+
+  $('#pokeMessage').animate({ width: 'hide' }, 350);
+
+  if ($('#oldPass').val() == '' || $('#pass').val() == '' || $('#pass2').val() == '') {
+    handleError('All fields are required');
+    return false;
+  }
+
+  if ($('#pass').val() !== $('#pass2').val()) {
+    handleError('Passwords do no match');
+    return false;
+  }
+
+  sendAjax('POST', $('#changePasswordForm').attr('action'), $('#changePasswordForm').serialize(), redirect);
+
+  return false;
+};
+
+var ChangePassWindow = function ChangePassWindow(props) {
+  return React.createElement(
+    'form',
+    { id: 'changePasswordForm', name: 'changePasswordForm', onSubmit: handleChangePass, action: '/changePassword', method: 'POST', 'class': 'mainForm' },
+    React.createElement(
+      'label',
+      { 'for': 'oldPass' },
+      'Old Password: '
+    ),
+    React.createElement('input', { id: 'oldPass', type: 'password', name: 'oldPass', placeholder: 'old password' }),
+    React.createElement(
+      'label',
+      { 'for': 'pass' },
+      'Password: '
+    ),
+    React.createElement('input', { id: 'pass', type: 'password', name: 'pass', placeholder: 'new password' }),
+    React.createElement(
+      'label',
+      { 'for': 'pass2' },
+      'Password: '
+    ),
+    React.createElement('input', { id: 'pass2', type: 'password', name: 'pass2', placeholder: 'retype new password' }),
+    React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+    React.createElement(
+      'button',
+      { type: 'submit', 'class': 'btn btn-primary btn-sm' },
+      'Change Password'
+    )
+  );
+};
+
+var renderChangePassWindow = function renderChangePassWindow(csrf) {
+  ReactDOM.render(React.createElement(ChangePassWindow, { csrf: csrf }), document.querySelector("#changePassBox"));
+};
+'use strict';
+
+// Handles the buy requests and sends it to the server
 var handleBuy = function handleBuy(e) {
     e.preventDefault();
 
@@ -111,6 +176,7 @@ var handleBuy = function handleBuy(e) {
     return false;
 };
 
+// Construct the form and page
 var StorePage = function StorePage(props) {
     return React.createElement(
         'div',
@@ -128,17 +194,19 @@ var StorePage = function StorePage(props) {
             React.createElement(
                 'button',
                 { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
-                'Buy Pokeballs'
+                'Buy 5 Pokeballs'
             )
         )
     );
 };
 
+// Renders the page
 var renderStore = function renderStore(csrf) {
     ReactDOM.render(React.createElement(StorePage, { csrf: csrf }), document.querySelector("#store"));
 };
 "use strict";
 
+// Constructs and display our list of pokemons for the account
 var PokeList = function PokeList(props) {
     if (props.pokes.length === 0) {
         return React.createElement(
@@ -181,18 +249,21 @@ var PokeList = function PokeList(props) {
     );
 };
 
+// Requests pokemons from the server
 var loadPokesFromServer = function loadPokesFromServer() {
     sendAjax('GET', '/getPokes', null, function (data) {
         ReactDOM.render(React.createElement(PokeList, { pokes: data.pokes }), document.querySelector("#pokes"));
     });
 };
 
+// Renders our list and attempts to fill it up
 var renderPokeList = function renderPokeList(csrf) {
     ReactDOM.render(React.createElement(PokeList, { pokes: [] }), document.querySelector("#pokes"));
 
     loadPokesFromServer();
 };
 
+// Page setup. Depending on what tag(s) we have, display and render that page.
 var setup = function setup(csrf, rolls) {
     if (document.querySelector("#pokes")) {
         renderPokeList(csrf);
@@ -203,14 +274,19 @@ var setup = function setup(csrf, rolls) {
     if (document.querySelector("#store")) {
         renderStore(csrf);
     }
+    if (document.querySelector("#changePassBox")) {
+        renderChangePassWindow(csrf);
+    }
 };
 
+// Grab our csrf token
 var getToken = function getToken() {
     sendAjax('GET', '/getToken', null, function (result) {
         setup(result.csrfToken);
     });
 };
 
+// When page is ready, grab token
 $(document).ready(function () {
     getToken();
 });
