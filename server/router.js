@@ -18,7 +18,10 @@ const router = (app) => {
   app.get('/store', mid.requiresLogin, controllers.Store.storePage);
   app.post('/buyBall', mid.requiresLogin, controllers.Store.buyBall);
   app.post('/useCandy', mid.requiresLogin, controllers.Poke.useCandy);
+  app.get('/getCandyAmount', mid.requiresLogin, controllers.Poke.getCandyAmount);
+  app.post('/transferPokemon', mid.requiresLogin, controllers.Poke.transferPokemon);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
+  app.get('*', mid.notFound);
 };
 
 module.exports = router;

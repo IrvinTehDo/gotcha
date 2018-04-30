@@ -164,11 +164,11 @@ var handleChangePass = function handleChangePass(e) {
 var ChangePassWindow = function ChangePassWindow(props) {
   return React.createElement(
     'form',
-    { id: 'changePasswordForm', name: 'changePasswordForm', onSubmit: handleChangePass, action: '/changePassword', method: 'POST', 'class': 'mainForm' },
+    { id: 'changePasswordForm', name: 'changePasswordForm', onSubmit: handleChangePass, action: '/changePassword', method: 'POST', className: 'mainForm' },
     React.createElement(
       'label',
       { 'for': 'oldPass' },
-      'Old Password: '
+      'Password: '
     ),
     React.createElement('input', { id: 'oldPass', type: 'password', name: 'oldPass', placeholder: 'old password' }),
     React.createElement(
@@ -186,7 +186,7 @@ var ChangePassWindow = function ChangePassWindow(props) {
     React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
     React.createElement(
       'button',
-      { type: 'submit', 'class': 'btn btn-primary btn-sm' },
+      { type: 'submit', className: 'btn btn-primary btn-lg' },
       'Change Password'
     )
   );
@@ -198,12 +198,10 @@ var renderChangePassWindow = function renderChangePassWindow(csrf) {
 'use strict';
 
 // Handles the buy requests and sends it to the server
-var handleBuy = function handleBuy(e) {
-    e.preventDefault();
-
+var handleBuy = function handleBuy(amount) {
     $("#pokeMessage").animate({ width: 'hide' }, 350);
 
-    sendAjax('POST', $("#buyForm").attr("action"), $("#buyForm").serialize(), function () {});
+    sendAjax('POST', $('#' + amount + 'buyForm').attr("action"), $('#' + amount + 'buyForm').serialize(), function () {});
 
     return false;
 };
@@ -215,18 +213,94 @@ var StorePage = function StorePage(props) {
         null,
         React.createElement(
             'form',
-            { id: 'buyForm',
-                onSubmit: handleBuy,
-                name: 'pokeForm',
+            { id: '5buyForm',
+                onSubmit: function onSubmit(e) {
+                    e.preventDefault();handleBuy(5);
+                },
+                name: '5buyForm',
                 action: '/buyBall',
                 method: 'POST',
                 className: 'pokeForm'
             },
-            React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
             React.createElement(
-                'button',
-                { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
-                'Buy 5 Pokeballs'
+                'fieldset',
+                null,
+                React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+                React.createElement('input', { type: 'hidden', name: 'amount', value: 5 }),
+                React.createElement(
+                    'button',
+                    { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                    'Buy 5 Pokeballs $4.99'
+                )
+            )
+        ),
+        React.createElement(
+            'form',
+            { id: '10buyForm',
+                onSubmit: function onSubmit(e) {
+                    e.preventDefault();handleBuy(10);
+                },
+                name: '10buyForm',
+                action: '/buyBall',
+                method: 'POST',
+                className: 'pokeForm'
+            },
+            React.createElement(
+                'fieldset',
+                null,
+                React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+                React.createElement('input', { type: 'hidden', name: 'amount', value: 10 }),
+                React.createElement(
+                    'button',
+                    { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                    'Buy 10 Pokeballs $8.99'
+                )
+            )
+        ),
+        React.createElement(
+            'form',
+            { id: '15buyForm',
+                onSubmit: function onSubmit(e) {
+                    e.preventDefault();handleBuy(15);
+                },
+                name: '15buyForm',
+                action: '/buyBall',
+                method: 'POST',
+                className: 'pokeForm'
+            },
+            React.createElement(
+                'fieldset',
+                null,
+                React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+                React.createElement('input', { type: 'hidden', name: 'amount', value: 15 }),
+                React.createElement(
+                    'button',
+                    { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                    'Buy 15 Pokeballs $16.99'
+                )
+            )
+        ),
+        React.createElement(
+            'form',
+            { id: '20buyForm',
+                onSubmit: function onSubmit(e) {
+                    e.preventDefault();handleBuy(20);
+                },
+                name: '20buyForm',
+                action: '/buyBall',
+                method: 'POST',
+                className: 'pokeForm'
+            },
+            React.createElement(
+                'fieldset',
+                null,
+                React.createElement('input', { type: 'hidden', name: '_csrf', value: props.csrf }),
+                React.createElement('input', { type: 'hidden', name: 'amount', value: 20 }),
+                React.createElement(
+                    'button',
+                    { type: 'submit', className: 'btn btn-info btn-lg btn-block' },
+                    'Buy 20 Pokeballs $19.99'
+                )
             )
         )
     );
@@ -252,11 +326,19 @@ var PokeList = function PokeList(props) {
         );
     }
 
-    var useCandy = function useCandy(e) {
-        e.preventDefault();
-
-        sendAjax('POST', $("#useCandyForm").attr("action"), $("#useCandyForm").serialize(), function () {
+    var useCandy = function useCandy(pokeId) {
+        sendAjax('POST', $("#" + pokeId + "useCandyForm").attr("action"), $("#" + pokeId + "useCandyForm").serialize(), function () {
             renderPokeList(props.csrf);
+            renderCandyAmount();
+        });
+
+        return false;
+    };
+
+    var transferPokemon = function transferPokemon(pokeId) {
+        sendAjax('POST', $("#" + pokeId + "transferPokemonForm").attr("action"), $("#" + pokeId + "transferPokemonForm").serialize(), function () {
+            renderPokeList(props.csrf);
+            renderCandyAmount();
         });
 
         return false;
@@ -282,23 +364,52 @@ var PokeList = function PokeList(props) {
                 " "
             ),
             React.createElement(
-                "form",
-                { id: "useCandyForm",
-                    onSubmit: useCandy,
-                    name: "useCandyForm",
-                    action: "/useCandy",
-                    method: "POST",
-                    className: "useCandyForm"
-                },
+                "div",
+                { id: "pokeForms" },
                 React.createElement(
-                    "fieldset",
-                    null,
-                    React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
-                    React.createElement("input", { type: "hidden", name: "pokeId", value: poke._id }),
+                    "form",
+                    { id: poke._id + "useCandyForm",
+                        onSubmit: function onSubmit(e) {
+                            e.preventDefault();useCandy(poke._id);
+                        },
+                        name: "useCandyForm",
+                        action: "/useCandy",
+                        method: "POST",
+                        className: "useCandyForm"
+                    },
                     React.createElement(
-                        "button",
-                        { type: "submit", className: "btn btn-info btn-lg btn-block" },
-                        "Use Rare Candy"
+                        "fieldset",
+                        null,
+                        React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+                        React.createElement("input", { type: "hidden", name: "pokeId", value: poke._id }),
+                        React.createElement(
+                            "button",
+                            { type: "submit", className: "btn btn-info btn-sm btn-block" },
+                            "Use Rare Candy"
+                        )
+                    )
+                ),
+                React.createElement(
+                    "form",
+                    { id: poke._id + "transferPokemonForm",
+                        onSubmit: function onSubmit(e) {
+                            e.preventDefault();transferPokemon(poke._id);
+                        },
+                        name: "transferPokemonForm",
+                        action: "/transferPokemon",
+                        method: "POST",
+                        className: "transferPokemonForm"
+                    },
+                    React.createElement(
+                        "fieldset",
+                        null,
+                        React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+                        React.createElement("input", { type: "hidden", name: "pokeId", value: poke._id }),
+                        React.createElement(
+                            "button",
+                            { type: "submit", className: "btn btn-info btn-sm btn-block" },
+                            "Transfer Pokemon"
+                        )
                     )
                 )
             )
@@ -326,10 +437,37 @@ var renderPokeList = function renderPokeList(csrf) {
     loadPokesFromServer(csrf);
 };
 
+var CandyAmount = function CandyAmount(props) {
+    return React.createElement(
+        "div",
+        null,
+        React.createElement(
+            "h2",
+            null,
+            "Rare Candy Amount: ",
+            props.candy
+        )
+    );
+};
+
+var renderCandyAmount = function renderCandyAmount() {
+    try {
+        sendAjax('GET', '/getCandyAmount', null, function (data) {
+            console.dir(data);
+            ReactDOM.render(React.createElement(CandyAmount, { candy: data.candy }), document.querySelector("#candy"));
+        });
+    } catch (e) {
+        console.log(e);
+    }
+};
+
 // Page setup. Depending on what tag(s) we have, display and render that page.
 var setup = function setup(csrf, rolls) {
     if (document.querySelector("#pokes")) {
         renderPokeList(csrf);
+    }
+    if (document.querySelector("#candy")) {
+        renderCandyAmount();
     }
     if (document.querySelector("#makePoke")) {
         renderPokeForm(csrf, rolls);

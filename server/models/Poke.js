@@ -87,7 +87,7 @@ PokeSchema.statics.deleteById = (uniqueId) => {
     _id: uniqueId,
   };
 
-  return PokeModel.remove(search, 1);
+  PokeModel.find(search).remove().exec();
 };
 
 PokeModel = mongoose.model('Poke', PokeSchema);

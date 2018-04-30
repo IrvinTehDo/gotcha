@@ -9,7 +9,7 @@ const storePage = (req, res) => res.render('store', { csrfToken: req.csrfToken()
 
 // Handles purchase of more pokeballs, for now it just adds 5.
 const buyBall = (req, res) => {
-  Account.AccountModel.updateRolls(req.session.account._id, 5);
+  Account.AccountModel.updateRolls(req.session.account._id, req.body.amount);
   console.log(res);
 };
 
