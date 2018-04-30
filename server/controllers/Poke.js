@@ -121,20 +121,23 @@ const getPokes = (request, response) => {
   });
 };
 
+// Uses a Rare Candy
 const useCandy = (request, response) => {
   const req = request;
   const res = response;
 
   const query = Account.AccountModel.getCandy(req.session.account._id);
   query.exec((err, result) => {
+      // Make sure user has candy
     if (result._doc.rareCandy > 0) {
       try {
+          // Attempt to take one candy away
         Account.AccountModel.updateCandy(req.session.account._id, -1, (err1) => {
           if (err1) {
             console.log(err1);
           }
         });
-
+          // Attempt to level up a pokemon
         Poke.PokeModel.updateLevel(req.body.pokeId, 1, (error) => {
           if (error) {
             console.log(err);
@@ -152,17 +155,20 @@ const useCandy = (request, response) => {
   });
 };
 
+// Delete/Transfer a pokemon for a rarecandy
 const transferPokemon = (request, response) => {
   const req = request;
   const res = response;
 
 
   try {
+      // Add a rare candy
     Account.AccountModel.updateCandy(req.session.account._id, 1, (err1) => {
       if (err1) {
         console.log(err1);
       }
     });
+      // Delete pokemon by their _id
     Poke.PokeModel.deleteById(req.body.pokeId);
   } catch (e) {
     console.log(e);
@@ -172,6 +178,7 @@ const transferPokemon = (request, response) => {
   return res.json({ data: ' ' });
 };
 
+// Returns candy amount
 const getCandyAmount = (request, response) => {
   const req = request;
   const res = response;

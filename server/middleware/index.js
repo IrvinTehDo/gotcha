@@ -14,6 +14,7 @@ const requiresLogout = (req, res, next) => {
   return next();
 };
 
+// Render 404 page if requested
 const notFound = (req, res) => {
   res.render('404NotFound', {});
 };

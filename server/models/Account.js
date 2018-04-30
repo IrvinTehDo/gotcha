@@ -118,7 +118,10 @@ AccountSchema.statics.updateCandy = (user, amount, callback) => {
 };
 
 // Same as getCandy except with rolls/pokeballs
-AccountSchema.statics.getRolls = user => AccountModel.findOne({ _id: user }, { rolls: 1, lastFreePokeaballUsed: 1 });
+AccountSchema.statics.getRolls = user => AccountModel.findOne(
+  { _id: user },
+  { rolls: 1, lastFreePokeaballUsed: 1 },
+);
 
 // Same as updateCandy except with rolls/pokeballs
 AccountSchema.statics.updateRolls = (user, amount, lastFree) => {

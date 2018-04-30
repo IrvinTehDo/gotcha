@@ -47,7 +47,7 @@ const RollCount = (props) => {
 }
 
 
-
+// Lets the user know how much time left until their next free roll.
 const FreeRollTimer = (props) => {
     console.dir(props);
     var curTime = new Date().getTime();

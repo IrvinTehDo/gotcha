@@ -95,6 +95,7 @@ const signup = (request, response) => {
   });
 };
 
+// Handles change request process
 const changePassword = (request, response) => {
   const req = request;
   const res = response;
@@ -104,10 +105,12 @@ const changePassword = (request, response) => {
   req.body.pass2 = `${req.body.pass2}`;
   console.dir(req.session.account.username);
 
+    // Check if new pass matches
   if (req.body.pass !== req.body.pass2) {
     return res.status(400).json({ error: 'Passwords do not match!' });
   }
 
+    // Make sure user's password is correct before moving on
   return Account.AccountModel.authenticate(
     req.session.account.username,
     req.body.oldPass,
@@ -118,6 +121,7 @@ const changePassword = (request, response) => {
         return res.status(401).json({ error: 'Wrong passsword' });
       }
 
+        // Save password to account
       return Account.AccountModel.generateHash(req.body.pass, (salt, hash) => {
         const acc = account;
         acc.password = hash;

@@ -8,8 +8,10 @@ const PokeList = (props) => {
         );
     }
     
+    //Submits a request to level up or use a candy based on the pokemon user selected. 
     const useCandy = (pokeId) => {
         sendAjax('POST', $(`#${pokeId}useCandyForm`).attr("action"), $(`#${pokeId}useCandyForm`).serialize(), () => {
+            //refresh list and candy amount
             renderPokeList(props.csrf);
             renderCandyAmount();
         });
@@ -17,8 +19,10 @@ const PokeList = (props) => {
         return false;
     };
     
+    // Request to transfer pokemon into candy. 
     const transferPokemon = (pokeId) => {
         sendAjax('POST', $(`#${pokeId}transferPokemonForm`).attr("action"), $(`#${pokeId}transferPokemonForm`).serialize(), () => {
+            //refresh list and candy amount
             renderPokeList(props.csrf);
             renderCandyAmount();
         });
@@ -97,6 +101,7 @@ const CandyAmount = (props) => {
     );
 };
 
+// Render candy amount
 const renderCandyAmount = () => {
     try {
         sendAjax('GET', '/getCandyAmount', null, (data) => {
