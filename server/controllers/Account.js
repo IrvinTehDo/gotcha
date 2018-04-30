@@ -127,6 +127,7 @@ const changePassword = (request, response) => {
 
         savePromise.then(() => {
           req.session.account = Account.AccountModel.toAPI(account);
+          return res.json({ redirect: '/view' });
         });
         savePromise.catch(() => res.status(500).json({ error: 'Unable to change password' }));
       });

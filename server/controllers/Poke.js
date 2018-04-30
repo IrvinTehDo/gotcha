@@ -34,7 +34,7 @@ const catchPage = (req, res) => {
 // the account has and sends it back as a response.
 const getCatchPageInfo = (req, res) => {
   const rollQuery = Account.AccountModel.getRolls(req.session.account._id);
-  rollQuery.exec((err, result) => res.json({ rolls: result._doc.rolls }));
+  rollQuery.exec((err, result) => res.json({ rolls: result._doc.rolls, lastFreePokeaballUsed: result._doc.lastFreePokeaballUsed }));
 };
 
 // Does a query to the database for the most recent catch
@@ -50,14 +50,50 @@ const getRecentCatch = (req, res) => Poke.PokeModel.findByOwner(
   },
 );
 
+const makeRandomPokemon = (req, res) => {
+  const pokemon = getRandomPokemon();
+  const level = Math.floor(Math.random() * 100) + 1;
+  console.dir(pokemon);
+
+  const pokeData = {
+    name: pokemon.name,
+    id: pokemon.id,
+    img: pokemon.image_url,
+    level,
+    owner: req.session.account._id,
+  };
+
+  const newPoke = new Poke.PokeModel(pokeData);
+
+  const pokePromise = newPoke.save();
+
+  try {
+    Account.AccountModel.updateRolls(req.session.account._id, -1);
+  } catch (e) {
+    console.log(e);
+  }
+
+  pokePromise.then(() => res.json({ redirect: '/view' }));
+
+  pokePromise.catch((error) => {
+    console.log(error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Pokemon already exists.' });
+    }
+
+    return res.status(400).json({ error: 'An error occurred' });
+  });
+};
+
 // Checks if we have enough pokeballs/rolls and if we do, create a random
 // pokemon with a random level and remove a pokeball/roll from the account.
 const makePoke = (req, res) => {
   const rollQuery = Account.AccountModel.getRolls(req.session.account._id);
   rollQuery.exec((err, result) => {
-    console.dir(result._doc.rolls);
-
-    if (result._doc.rolls > 0) {
+    console.dir(result._doc);
+    if (result._doc.rolls > 0 ||
+        result._doc.lastFreePokeballUsed === null ||
+        Date.now() - result._doc.lastFreePokeaballUsed.getTime() > 3600000) {
       const pokemon = getRandomPokemon();
       const level = Math.floor(Math.random() * 100) + 1;
       console.dir(pokemon);
@@ -75,7 +111,7 @@ const makePoke = (req, res) => {
       const pokePromise = newPoke.save();
 
       try {
-        Account.AccountModel.updateRolls(req.session.account._id, -1);
+        Account.AccountModel.updateRolls(req.session.account._id, -1, result._doc.lastFreePokeaballUsed.getTime());
       } catch (e) {
         console.log(e);
       }
@@ -114,9 +150,44 @@ const getPokes = (request, response) => {
   });
 };
 
+const useCandy = (request, response) => {
+  const req = request;
+  const res = response;
+
+  const query = Account.AccountModel.getCandy(req.session.account._id);
+  query.exec((err, result) => {
+    if (result._doc.rareCandy > 0) {
+      try {
+        Account.AccountModel.updateCandy(req.session.account._id, -1, (err1) => {
+          if (err1) {
+            console.log(err1);
+            return res.status(400).json({ error: 'An error occurred' });
+          }
+          // return res.json({ data: ' ' });
+        });
+
+        Poke.PokeModel.updateLevel(req.body.pokeId, 1, (error) => {
+          if (error) {
+            return res.status(400).json({ error: 'An error occurred' });
+          }
+          // return res.json({ data: ' ' });
+        });
+      } catch (e) {
+        console.log(e);
+        return res.status(400).json({ error: 'An error occurred' });
+      }
+    } else {
+      return res.status(400).json({ error: 'Not enough candy' });
+    }
+
+    return res.json({ data: ' ' });
+  });
+};
+
 module.exports.makerPage = makerPage;
 module.exports.catchPage = catchPage;
 module.exports.getCatchPageInfo = getCatchPageInfo;
 module.exports.getPokes = getPokes;
 module.exports.getRecentCatch = getRecentCatch;
 module.exports.make = makePoke;
+module.exports.useCandy = useCandy;

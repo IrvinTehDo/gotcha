@@ -36,6 +36,10 @@ const AccountSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  lastFreePokeaballUsed: {
+    type: Date,
+    default: 0,
+  },
 });
 
 AccountSchema.statics.toAPI = doc => ({
@@ -93,28 +97,43 @@ AccountSchema.statics.authenticate = (username, password, callback) =>
 AccountSchema.statics.getCandy = user => AccountModel.findOne({ _id: user }, { rareCandy: 1 });
 
 // Updates amount of candy a user has based on amount
-AccountSchema.statics.updateCandy = (user, amount) => {
+AccountSchema.statics.updateCandy = (user, amount, callback) => {
   const update = {
     $inc: { rareCandy: amount },
   };
 
   try {
-    AccountModel.findByIdAndUpdate(user, update, (err, doc) => {
-      console.log(doc);
+    AccountModel.findByIdAndUpdate(user, update, (err) => {
+      if (err) {
+        return callback(err);
+      }
+      return callback(null);
     });
   } catch (e) {
     console.log(e);
+    return callback(e);
   }
+
+  return callback();
 };
 
 // Same as getCandy except with rolls/pokeballs
-AccountSchema.statics.getRolls = user => AccountModel.findOne({ _id: user }, { rolls: 1 });
+AccountSchema.statics.getRolls = user => AccountModel.findOne({ _id: user }, { rolls: 1, lastFreePokeaballUsed: 1 });
 
 // Same as updateCandy except with rolls/pokeballs
-AccountSchema.statics.updateRolls = (user, amount) => {
-  const update = {
-    $inc: { rolls: amount },
-  };
+AccountSchema.statics.updateRolls = (user, amount, lastFree) => {
+  let update = {};
+  console.log(`Subtract: ${Date.now() - lastFree}`);
+
+  if (Date.now() - lastFree > 3600000) {
+    update = {
+      $set: { lastFreePokeaballUsed: Date.now() },
+    };
+  } else {
+    update = {
+      $inc: { rolls: amount },
+    };
+  }
 
   try {
     //    AccountModel.updateOne({ _id: user }, { $inc: { rolls: amount } });

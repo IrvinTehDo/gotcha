@@ -17,6 +17,7 @@ const router = (app) => {
   app.post('/catch', mid.requiresLogin, controllers.Poke.make);
   app.get('/store', mid.requiresLogin, controllers.Store.storePage);
   app.post('/buyBall', mid.requiresLogin, controllers.Store.buyBall);
+  app.post('/useCandy', mid.requiresLogin, controllers.Poke.useCandy);
   app.get('/', mid.requiresSecure, mid.requiresLogout, controllers.Account.loginPage);
 };
 

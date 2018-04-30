@@ -46,6 +46,32 @@ const RollCount = (props) => {
     )
 }
 
+
+
+const FreeRollTimer = (props) => {
+    console.dir(props);
+    var curTime = new Date().getTime();
+    const countFrom = Date.parse(props.lastFreePokeaballUsed) + 3600000;
+    var length = countFrom - curTime;
+    
+    let dateText = "";
+    
+    if(length > 0){
+        var h = Math.floor((length %(1000*60*60*24))/ (1000*60*60));
+        var m = Math.floor((length %(1000*60*60)) / (1000 * 60));
+        dateText = `Free Pokeball in: ${h} Hours ${m} Min`;
+    } else {
+        dateText = "Free Pokeball is Available"
+    }
+            
+
+    return (
+        <div>
+            <h2>{dateText}</h2>
+        </div>
+    );
+}
+
 //Displays our most recently captured pokemon
 const CatchFrame = (props) => {
     if (props.catch) {
@@ -69,7 +95,11 @@ const CatchFrame = (props) => {
 const getCatchPageInfo = () => {
         sendAjax('GET', '/getCatchPageInfo', null, (data) => {
         ReactDOM.render(
-            <RollCount rolls={data.rolls} />, document.querySelector("#rollCount")
+            <section>
+            <RollCount rolls={data.rolls} />
+                <FreeRollTimer lastFreePokeaballUsed={data.lastFreePokeaballUsed} />
+            </section>
+            , document.querySelector("#rollCount")
         );
     });
 };

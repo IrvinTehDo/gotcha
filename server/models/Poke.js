@@ -61,6 +61,27 @@ PokeSchema.statics.findByOwner = (ownerId, callback) => {
   return PokeModel.find(search).select('name level id img').exec(callback);
 };
 
+PokeSchema.statics.updateLevel = (pokeId, amount, callback) => {
+  const update = {
+    $inc: { level: amount },
+  };
+
+  try {
+    PokeModel.findByIdAndUpdate(pokeId, update, (err) => {
+      if (err) {
+        console.log(err);
+        return callback(err);
+      }
+
+      return callback();
+    });
+  } catch (e) {
+    console.log(e);
+    return callback(e);
+  }
+  return callback();
+};
+
 PokeSchema.statics.deleteById = (uniqueId) => {
   const search = {
     _id: uniqueId,

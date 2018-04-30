@@ -57,6 +57,33 @@ var RollCount = function RollCount(props) {
     );
 };
 
+var FreeRollTimer = function FreeRollTimer(props) {
+    console.dir(props);
+    var curTime = new Date().getTime();
+    var countFrom = Date.parse(props.lastFreePokeaballUsed) + 3600000;
+    var length = countFrom - curTime;
+
+    var dateText = "";
+
+    if (length > 0) {
+        var h = Math.floor(length % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+        var m = Math.floor(length % (1000 * 60 * 60) / (1000 * 60));
+        dateText = 'Free Pokeball in: ' + h + ' Hours ' + m + ' Min';
+    } else {
+        dateText = "Free Pokeball is Available";
+    }
+
+    return React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'h2',
+            null,
+            dateText
+        )
+    );
+};
+
 //Displays our most recently captured pokemon
 var CatchFrame = function CatchFrame(props) {
     if (props.catch) {
@@ -95,7 +122,12 @@ var CatchFrame = function CatchFrame(props) {
 //Requests amount of pokeballs we have left
 var getCatchPageInfo = function getCatchPageInfo() {
     sendAjax('GET', '/getCatchPageInfo', null, function (data) {
-        ReactDOM.render(React.createElement(RollCount, { rolls: data.rolls }), document.querySelector("#rollCount"));
+        ReactDOM.render(React.createElement(
+            'section',
+            null,
+            React.createElement(RollCount, { rolls: data.rolls }),
+            React.createElement(FreeRollTimer, { lastFreePokeaballUsed: data.lastFreePokeaballUsed })
+        ), document.querySelector("#rollCount"));
     });
 };
 
@@ -220,6 +252,16 @@ var PokeList = function PokeList(props) {
         );
     }
 
+    var useCandy = function useCandy(e) {
+        e.preventDefault();
+
+        sendAjax('POST', $("#useCandyForm").attr("action"), $("#useCandyForm").serialize(), function () {
+            renderPokeList(props.csrf);
+        });
+
+        return false;
+    };
+
     var pokeNodes = props.pokes.map(function (poke) {
         return React.createElement(
             "div",
@@ -238,6 +280,27 @@ var PokeList = function PokeList(props) {
                 " Level: ",
                 poke.level,
                 " "
+            ),
+            React.createElement(
+                "form",
+                { id: "useCandyForm",
+                    onSubmit: useCandy,
+                    name: "useCandyForm",
+                    action: "/useCandy",
+                    method: "POST",
+                    className: "useCandyForm"
+                },
+                React.createElement(
+                    "fieldset",
+                    null,
+                    React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+                    React.createElement("input", { type: "hidden", name: "pokeId", value: poke._id }),
+                    React.createElement(
+                        "button",
+                        { type: "submit", className: "btn btn-info btn-lg btn-block" },
+                        "Use Rare Candy"
+                    )
+                )
             )
         );
     });
@@ -250,17 +313,17 @@ var PokeList = function PokeList(props) {
 };
 
 // Requests pokemons from the server
-var loadPokesFromServer = function loadPokesFromServer() {
+var loadPokesFromServer = function loadPokesFromServer(csrf) {
     sendAjax('GET', '/getPokes', null, function (data) {
-        ReactDOM.render(React.createElement(PokeList, { pokes: data.pokes }), document.querySelector("#pokes"));
+        ReactDOM.render(React.createElement(PokeList, { pokes: data.pokes, csrf: csrf }), document.querySelector("#pokes"));
     });
 };
 
 // Renders our list and attempts to fill it up
 var renderPokeList = function renderPokeList(csrf) {
-    ReactDOM.render(React.createElement(PokeList, { pokes: [] }), document.querySelector("#pokes"));
+    ReactDOM.render(React.createElement(PokeList, { pokes: [], csrf: csrf }), document.querySelector("#pokes"));
 
-    loadPokesFromServer();
+    loadPokesFromServer(csrf);
 };
 
 // Page setup. Depending on what tag(s) we have, display and render that page.

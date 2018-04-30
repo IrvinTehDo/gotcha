@@ -8,12 +8,36 @@ const PokeList = (props) => {
         );
     }
     
+    const useCandy = (e) => {
+        e.preventDefault();
+        
+        sendAjax('POST', $(`#useCandyForm`).attr("action"), $(`#useCandyForm`).serialize(), () => {
+            renderPokeList(props.csrf);
+        });
+        
+        return false;
+    };
+    
+    
     const pokeNodes = props.pokes.map( (poke) => {
         return (
             <div key={poke._id} className="poke">
                 <img src={poke.img} alt="Pokeball" className="pokeBall" />
                 <h3 className="pokeName"> Name: {poke.name} </h3>
                 <h3 className="pokeAge"> Level: {poke.level} </h3>
+                <form id="useCandyForm"
+                    onSubmit={useCandy}
+                    name="useCandyForm"
+                    action="/useCandy"
+                    method="POST"
+                    className="useCandyForm"
+                >
+                <fieldset>
+                <input type="hidden" name="_csrf" value={props.csrf} />
+                <input type="hidden" name="pokeId" value={poke._id} />   
+                <button type="submit" className="btn btn-info btn-lg btn-block">Use Rare Candy</button>
+                </fieldset>
+                </form>
             </div>
         ); 
     });
@@ -26,21 +50,21 @@ const PokeList = (props) => {
 };
 
 // Requests pokemons from the server
-const loadPokesFromServer = () => {
+const loadPokesFromServer = (csrf) => {
     sendAjax('GET', '/getPokes', null, (data) => {
         ReactDOM.render(
-            <PokeList pokes={data.pokes} />, document.querySelector("#pokes")
+            <PokeList pokes={data.pokes} csrf={csrf} />, document.querySelector("#pokes")
         );
     });
-}
+};
 
 // Renders our list and attempts to fill it up
 const renderPokeList = (csrf) => {
     ReactDOM.render(
-        <PokeList pokes={[]} />, document.querySelector("#pokes")
+        <PokeList pokes={[]} csrf={csrf}/>, document.querySelector("#pokes")
     );
     
-    loadPokesFromServer();
+    loadPokesFromServer(csrf);
 }
 
 // Page setup. Depending on what tag(s) we have, display and render that page.
